@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Speakify</string>
     <string name="hint"><![CDATA[Tap & Start Speaking!]]></string>
+    <string-array name="default_filler_words">
+        <item>like</item>
+        <item>so</item>
+        <item>and</item>
+        <item>well</item>
+        <item>alright</item>
+    </string-array>
 </resources>
