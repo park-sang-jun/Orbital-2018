@@ -7,6 +7,7 @@ import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,8 +25,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView mVoiceInputTv;
     private TextView mFillerCountResult;
     private ImageButton mSpeakBtn;
-    private HashMap<String, Integer> fillerWordCount;
-    private String[] fillerWords;
+    private Button statsButton;
+    private static HashMap<String, Integer> fillerWordCountLast;
+    private static String[] fillerWords;
+
+    public static HashMap<String, Integer> fillerWordCountTotal;
 
 
     @Override
@@ -33,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fillerWordCount = new HashMap<>();
+        fillerWordCountTotal = new HashMap<>();
         fillerWords = getResources().getStringArray(R.array.default_filler_words);
         mVoiceInputTv = findViewById(R.id.voiceInput);
         mFillerCountResult = findViewById(R.id.fillerCount);
@@ -43,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startVoiceInput();
+            }
+        });
+        statsButton = (Button) findViewById(R.id.btnStats);
+
+        statsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, StatsActivity.class));
             }
         });
     }
@@ -73,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
                     countFillerWords(resultString, fillerWords);
 
-                    mFillerCountResult.setText(fillerCountMessage(fillerWords));
+                    mFillerCountResult.setText(fillerCountMessage(fillerWords, fillerWordCountLast));
                 }
                 break;
             }
@@ -82,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void countFillerWords(String message, String[] fillerWordArray) {
         LinkedList<String> messageLL = new LinkedList<>(Arrays.asList(message.split(" ")));
+        fillerWordCountLast = new HashMap<>();
         for (String filler : fillerWordArray) {
             int count = 0;
             ListIterator<String> iter = messageLL.listIterator();
@@ -91,15 +104,19 @@ public class MainActivity extends AppCompatActivity {
                     iter.remove();
                 }
             }
-            fillerWordCount.put(filler, count);
+            Integer totalCount = fillerWordCountTotal.get(filler);
+            fillerWordCountTotal.put(filler, count + (totalCount == null ? 0 : totalCount));
+            if (count > 0) {
+                fillerWordCountLast.put(filler, count);
+            }
         }
     }
 
-    private String fillerCountMessage(String[] fillerWordArray) {
+    private static String fillerCountMessage(String[] fillerWordArray, HashMap<String, Integer> wordCounts) {
         StringBuilder message = new StringBuilder();
         for (String filler:fillerWordArray) {
-            int count = fillerWordCount.get(filler);
-            if (count > 0) {
+            Integer count = wordCounts.get(filler);
+            if (count != null && count > 0) {
                 message.append("\'");
                 message.append(filler);
                 message.append("\' : ");
@@ -108,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return message.toString();
+    }
+
+    public static String getTotalMessage() {
+        return fillerCountMessage(fillerWords, fillerWordCountTotal);
+    }
+
+    public static void resetTotalCount() {
+        fillerWordCountTotal = new HashMap<>();
     }
 }
 
