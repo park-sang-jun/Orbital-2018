@@ -30,6 +30,6 @@ public class StatsActivity extends AppCompatActivity {
     }
 
     private void setTextResults() {
-        totalStatsText.setText("Word : Count \n" + MainActivity.getTotalMessage());
+        totalStatsText.setText(MainActivity.getGlobalStatMessage() + "\nWord Count: \n" + MainActivity.getTotalMessage());
     }
 }

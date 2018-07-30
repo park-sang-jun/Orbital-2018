@@ -22,6 +22,16 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+
+    private long startTime;
+    private long stopTime;
+    private int numWords;
+    private double wordsPerMinute;
+    private double elapsedTime;
+    private String statMessage;
+    private static int numWordsGlobal = 0;
+    private static double totalTimeGlobal = 0;
+
     private TextView mVoiceInputTv;
     private TextView mFillerCountResult;
     private ImageButton mSpeakBtn;
@@ -66,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
         try {
+            startTime = System.currentTimeMillis();
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         } catch (ActivityNotFoundException a) {
             Toast.makeText(this, "Your device does not support speech input.", Toast.LENGTH_SHORT).show();
@@ -79,21 +90,24 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQ_CODE_SPEECH_INPUT: {
                 if (resultCode == RESULT_OK && data != null) {
+                    stopTime = System.currentTimeMillis();
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String resultString = result.get(0);
                     mVoiceInputTv.setText(resultString);
 
-                    countFillerWords(resultString, fillerWords);
+                    LinkedList<String> messageLL = new LinkedList<>(Arrays.asList(resultString.split(" ")));
+                    countFillerWords(messageLL, fillerWords);
+                    evaluateTime(messageLL.size());
 
-                    mFillerCountResult.setText(fillerCountMessage(fillerWords, fillerWordCountLast));
+                    mFillerCountResult.setText(statMessage + "\nWord count: \n" + fillerCountMessage(fillerWords, fillerWordCountLast));
                 }
                 break;
             }
         }
     }
 
-    private void countFillerWords(String message, String[] fillerWordArray) {
-        LinkedList<String> messageLL = new LinkedList<>(Arrays.asList(message.split(" ")));
+    private void countFillerWords(LinkedList<String> messageLL, String[] fillerWordArray) {
+        // LinkedList<String> messageLL = new LinkedList<>(Arrays.asList(message.split(" ")));
         fillerWordCountLast = new HashMap<>();
         for (String filler : fillerWordArray) {
             int count = 0;
@@ -133,6 +147,25 @@ public class MainActivity extends AppCompatActivity {
 
     public static void resetTotalCount() {
         fillerWordCountTotal = new HashMap<>();
+    }
+
+    private void evaluateTime(int numberOfWords) {
+        elapsedTime = (double) (stopTime - startTime) / (double) 1000;
+        wordsPerMinute = (double) numberOfWords * 60 / elapsedTime;
+        numWords = numberOfWords;
+        numWordsGlobal += numWords;
+        totalTimeGlobal += elapsedTime;
+        statMessage = getStatMessage(elapsedTime, numWords, wordsPerMinute);
+    }
+
+    public static String getStatMessage(double time, int numWords, double wordsPerMinute) {
+        return "Time: " + time + "s \n" +
+                "Number of words: " + numWords + "\n" +
+                "Average WPM: " + String.format("%.2f", wordsPerMinute);
+    }
+
+    public static String getGlobalStatMessage() {
+        return getStatMessage(totalTimeGlobal, numWordsGlobal, (double) numWordsGlobal * 60 / totalTimeGlobal);
     }
 }
 
