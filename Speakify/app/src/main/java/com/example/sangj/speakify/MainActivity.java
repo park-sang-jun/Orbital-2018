@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private double wordsPerMinute;
     private double elapsedTime;
     private String statMessage;
-    private static int numWordsGlobal = 0;
-    private static double totalTimeGlobal = 0;
+    private static int numWordsGlobal;
+    private static double totalTimeGlobal;
 
     private TextView mVoiceInputTv;
     private TextView mFillerCountResult;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fillerWordCountTotal = new HashMap<>();
+        resetTotalCount();
         fillerWords = getResources().getStringArray(R.array.default_filler_words);
         mVoiceInputTv = findViewById(R.id.voiceInput);
         mFillerCountResult = findViewById(R.id.fillerCount);
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Analysing as you speak!");
         try {
             startTime = System.currentTimeMillis();
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static void resetTotalCount() {
         fillerWordCountTotal = new HashMap<>();
+        numWordsGlobal = 0;
+        totalTimeGlobal = 0;
     }
 
     private void evaluateTime(int numberOfWords) {
