@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
                     mVoiceInputTv.setText(resultString);
 
                     LinkedList<String> messageLL = new LinkedList<>(Arrays.asList(resultString.split(" ")));
-                    countFillerWords(messageLL, fillerWords);
                     evaluateTime(messageLL.size());
+                    countFillerWords(messageLL, fillerWords);
 
                     mFillerCountResult.setText(statMessage + "\nWord count: \n" + fillerCountMessage(fillerWords, fillerWordCountLast));
                 }
