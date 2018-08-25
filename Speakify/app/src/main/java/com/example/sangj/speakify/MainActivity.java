@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mVoiceInputTv;
     private TextView mFillerCountResult;
     private ImageButton mSpeakBtn;
-    private Button statsButton;
+    private ImageButton statsButton;
     private static HashMap<String, Integer> fillerWordCountLast;
     private static String[] fillerWords;
 
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 startVoiceInput();
             }
         });
-        statsButton = (Button) findViewById(R.id.btnStats);
+        statsButton = findViewById(R.id.btnStats);
 
         statsButton.setOnClickListener(new View.OnClickListener() {
             @Override
