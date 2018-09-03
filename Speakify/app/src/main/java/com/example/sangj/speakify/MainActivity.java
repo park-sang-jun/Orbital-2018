@@ -7,7 +7,6 @@ import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static String[] fillerWords;
 
     public static HashMap<String, Integer> fillerWordCountTotal;
+    public static String finalStatMessage;
 
 
     @Override
@@ -99,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
                     evaluateTime(messageLL.size());
                     countFillerWords(messageLL, fillerWords);
 
-                    mFillerCountResult.setText(statMessage + "\nWord count: \n" + fillerCountMessage(fillerWords, fillerWordCountLast));
+                    finalStatMessage = "Last recorded text\n" +
+                            statMessage + "\nFiller word count\n" + fillerCountMessage(fillerWords, fillerWordCountLast);
                 }
                 break;
             }
@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void countFillerWords(LinkedList<String> messageLL, String[] fillerWordArray) {
-        // LinkedList<String> messageLL = new LinkedList<>(Arrays.asList(message.split(" ")));
         fillerWordCountLast = new HashMap<>();
         for (String filler : fillerWordArray) {
             int count = 0;
@@ -161,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static String getStatMessage(double time, int numWords, double wordsPerMinute) {
-        return "Time: " + time + "s \n" +
-                "Number of words: " + numWords + "\n" +
+        return "Time: " + String.format("%.2f", time) + "s \n" +
+                "Word count: " + numWords + "\n" +
                 "Average WPM: " + String.format("%.2f", wordsPerMinute);
     }
 

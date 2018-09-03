@@ -81,5 +81,5 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="175dp"
-        android:text="Lifetime Statistics" />
+        android:text="Statistics" />
 </RelativeLayout>
